@@ -67,13 +67,19 @@ Note: The names of the classes in the Fresco source code are relatively long, bu
     Calculate the size of an image
     
     
-    The calculation formula of the image occupied by the picture: the height of the picture * the width of the picture * the size of the memory occupied by one pixel. Therefore, when calculating the size of the memory occupied by the picture, it is necessary to consider the directory where the picture is located and the density of the device. These two factors actually affect the picture. High and wide, android will pull and compress the image.
+    The calculation formula of the image occupied by the picture: the height of the picture * the width of the picture 
+    * the size of the memory occupied by one pixel. Therefore, when calculating the size of the memory occupied by the
+    picture, it is necessary to consider the directory where the picture is located and the density of the device. 
+    These two factors actually affect the picture. High and wide, android will pull and compress the image.
     
     
     Load the bitmap process (how to ensure no memory overflow)
     
     
-    Because Android has limited memory for images, if it loads a large number of megabytes, the memory overflows. Bitmap will load all the pixels of the image (that is, the length x width) into the memory. If the resolution of the image is too large, it will directly lead to the memory OOM. Only when the BitmapFactory loads the image, use BitmapFactory.Options to configure the related parameters to reduce the loading. Pixel.
+    Because Android has limited memory for images, if it loads a large number of megabytes, the memory overflows. 
+    Bitmap will load all the pixels of the image (that is, the length x width) into the memory. If the resolution 
+    of the image is too large, it will directly lead to the memory OOM. Only when the BitmapFactory loads the image
+    , use BitmapFactory.Options to configure the related parameters to reduce the loading. Pixel.
     
     
     Detailed explanation of related parameters of BitmapFactory.Options
@@ -89,9 +95,11 @@ Note: The names of the classes in the Fresco source code are relatively long, bu
     
     (3). Set Options.inPurgeable and inInputShareable: Allow the system to reclaim memory in time.
     
-    A:inPurgeable: When set to True, it means that it can be recycled when the system is out of memory. When it is set to False, it means it cannot be recycled.
+    A:inPurgeable: When set to True, it means that it can be recycled when the system is out of memory. 
+    When it is set to False, it means it cannot be recycled.
     
-    B:inInputShareable: Set whether to copy deep, in combination with inPurgeable, this parameter is meaningless when inPurgeable is false.
+    B:inInputShareable: Set whether to copy deep, in combination with inPurgeable, this parameter is meaningless
+    when inPurgeable is false.
     
     
     (4). Use decodeStream instead of other methods.
@@ -100,10 +108,15 @@ Note: The names of the classes in the Fresco source code are relatively long, bu
 
 ** How is the LRUCache algorithm implemented? **
 
-    There is a LinkedHashMap and maxSize inside, and the recently used object is stored in the LinkedHashMap with a strong reference. The put and get methods are given. The total size of all the pictures in the cache is calculated each time the picture is put, compared with maxSize, greater than maxSize. The oldest added image is removed; otherwise it is added less than maxSize.
+    There is a LinkedHashMap and maxSize inside, and the recently used object is stored in the LinkedHashMap 
+    with a strong reference. The put and get methods are given. The total size of all the pictures in the cache
+    is calculated each time the picture is put, compared with maxSize, greater than maxSize. The oldest added 
+    image is removed; otherwise it is added less than maxSize.
     
     
-    Previously, we would use memory caching technology, which is soft reference or weak reference. Starting with Android 2.3 (APILevel 9), the garbage collector would prefer to recycle objects that hold soft or weak references, which makes soft references and Weak references are no longer reliable.
+    Previously, we would use memory caching technology, which is soft reference or weak reference. Starting 
+    with Android 2.3 (APILevel 9), the garbage collector would prefer to recycle objects that hold soft or weak
+    references, which makes soft references and Weak references are no longer reliable.
     
 Write a picture browser and say your thoughts
 
@@ -116,17 +129,27 @@ Write a picture browser and say your thoughts
     decodeStream (input stream) 
     decodeByteArray(bytes)
     BitmapFactory.options parameter
-    inSampleSize The sampling rate, which scales the height and width of the image and scales with a minimum ratio (typically an exponent of 2). Usually, the width ratio of the width and height is calculated according to the actual size of the picture width/height and the required width and height. But you should take the smallest zoom ratio, to avoid scaling the image is too small, can not be covered in the specified control, need to stretch and cause blur.
-    inJustDecodeBounds Get the width and height information of the image, and give the inSampleSize parameter to select the zoom ratio. By inJustDecodeBounds = true, then loading the image can achieve only parsing the width and height of the image, and does not actually load the image, so this operation is lightweight. When the width and height information is obtained, the zoom ratio is calculated, and then the image is loaded by inJustDecodeBounds = false and the image is reloaded, the scaled image can be loaded.
+    inSampleSize The sampling rate, which scales the height and width of the image and scales with a minimum 
+    ratio (typically an exponent of 2). Usually, the width ratio of the width and height is calculated according
+    to the actual size of the picture width/height and the required width and height. But you should take the smallest
+    zoom ratio, to avoid scaling the image is too small, can not be covered in the specified control, need to stretch
+    and cause blur.
+    inJustDecodeBounds Get the width and height information of the image, and give the inSampleSize parameter to select
+    the zoom ratio. By inJustDecodeBounds = true, then loading the image can achieve only parsing the width and height
+    of the image, and does not actually load the image, so this operation is lightweight. When the width and height 
+    information is obtained, the zoom ratio is calculated, and then the image is loaded by inJustDecodeBounds = false
+    and the image is reloaded, the scaled image can be loaded.
     Process for efficiently loading Bitmaps
     Set the inJustDecodeBounds parameter of BitmapFactory.Options to true and load the image
-    Extract the original width and height information of the image from BitmapFactory.Options, corresponding to the outWidth and outHeight parameters
+    Extract the original width and height information of the image from BitmapFactory.Options, corresponding to the 
+    outWidth and outHeight parameters
     Calculate the sampling rate inSampleSize according to the sampling rate rule and the size of the target view.
     Set the inJustDecodeBounds of BitmapFactory.Options to false to reload the image
 
 **Bitmap processing: **
 
-When using ImageView, the pixels of the image may be larger than ImageView. In this case, the image can be compressed by BitmapFactory.Option, and inSampleSize is reduced by 2^(inSampleSize-1) times.
+When using ImageView, the pixels of the image may be larger than ImageView. In this case, the image can be compressed
+by BitmapFactory.Option, and inSampleSize is reduced by 2^(inSampleSize-1) times.
 
 BitMap cache:
 
@@ -134,7 +157,8 @@ BitMap cache:
 
 2. Use DiskLruCache for hard disk caching.
 
-3. Implement an ImageLoader process: synchronous asynchronous loading, image compression, memory hard disk caching, network pull
+3. Implement an ImageLoader process: synchronous asynchronous loading, image compression, memory hard disk caching, 
+network pull
 
     1. Synchronous loading only creates one thread and then loads the images in order
     2. Asynchronous loading uses a thread pool, so that existing load tasks are in different threads
@@ -154,7 +178,8 @@ Https://www.jianshu.com/p/050c6db5af5a
 
 **How ​​to consider the security of data transmission**
 
-    If the application does not have any security measures against the transmitted data, the attacker sets the DNS server in the phishing network. This server can obtain user information or act as an intermediary to exchange data with the original server. In SSL/TLS communication, the client judges whether the server is trusted by digital certificate, and uses the public key of the certificate to perform encrypted communication with the server.
+    If the application does not have any security measures against the transmitted data, the attacker sets 
+    the DNS server in the phishing network. This server can obtain user information or act as an intermediary to exchange data with the original server. In SSL/TLS communication, the client judges whether the server is trusted by digital certificate, and uses the public key of the certificate to perform encrypted communication with the server.
 
 How to access the network to encrypt
 1: symmetric encryption (DES, AES) and asymmetric (RSA public and private keys). (the public and private keys of the merchant in Alipay)
