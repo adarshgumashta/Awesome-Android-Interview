@@ -179,7 +179,10 @@ Https://www.jianshu.com/p/050c6db5af5a
 **How ​​to consider the security of data transmission**
 
     If the application does not have any security measures against the transmitted data, the attacker sets 
-    the DNS server in the phishing network. This server can obtain user information or act as an intermediary to exchange data with the original server. In SSL/TLS communication, the client judges whether the server is trusted by digital certificate, and uses the public key of the certificate to perform encrypted communication with the server.
+    the DNS server in the phishing network. This server can obtain user information or act as an intermediary to 
+    exchange data with the original server. In SSL/TLS communication, the client judges whether the server is trusted
+    by digital certificate, and uses the public key of the certificate to perform encrypted communication with the 
+    server.
 
 How to access the network to encrypt
 1: symmetric encryption (DES, AES) and asymmetric (RSA public and private keys). (the public and private keys of the merchant in Alipay)
@@ -255,7 +258,8 @@ Database data migration problem
 
 ** Fourth, plug-in, modular, component, hot fix, incremental update, Gradle**
 
-**How ​​to implement plug-in related technology, how to implement hot patching technology, and what is the difference between plug-in and **
+**How ​​to implement plug-in related technology, how to implement hot patching technology, and what is the 
+difference between plug-in and **
 
 Http://www.liuguangli.win/archives/366
 Http://www.liuguangli.win/archives/387
@@ -270,18 +274,29 @@ Http://www.liuguangli.win/archives/452
     difference:
     
     
-    Because the hot fix is ​​to fix the bug, you need to replace the bug with the same name with the same name. You must first load the new class instead of the bug class, so do two more things: when the original app is packaged, block the related The class is marked with the CLASS_ISPREVERIFIED flag, and the dexElements that indirectly reference the BaseDexClassLoader object are dynamically changed during the hot fix, so that the bug class can be replaced first, and the system does not load the old bug class.
+    Because the hot fix is ​​to fix the bug, you need to replace the bug with the same name with the same name. 
+    You must first load the new class instead of the bug class, so do two more things: when the original app is 
+    packaged, block the related The class is marked with the CLASS_ISPREVERIFIED flag, and the dexElements that 
+    indirectly reference the BaseDexClassLoader object are dynamically changed during the hot fix, so that the 
+    bug class can be replaced first, and the system does not load the old bug class.
     
     
-    Plug-in is just a new functional class or resource file, so it doesn't involve the task of preloading the old class. It avoids blocking related classes from playing the CLASS_ISPREVERIFIED flag and dynamically changing the BaseDexClassLoader object in the hot fix. Quoted dexElements.
+    Plug-in is just a new functional class or resource file, so it doesn't involve the task of preloading the old
+    class. It avoids blocking related classes from playing the CLASS_ISPREVERIFIED flag and dynamically changing 
+    the BaseDexClassLoader object in the hot fix. Quoted dexElements.
     
     So plug-in is simpler than hot-fixing, and hot-repair is based on plug-in.
     
 **Understanding plugins and hot fixes, what is the difference between them and how do you understand them? **
 
-Plug-in: Plug-in is reflected in the function split, it extracts a function independently, independently developed, independently tested, and then inserted into the main application. In turn, the size of the main application is less.
+Plug-in: Plug-in is reflected in the function split, it extracts a function independently, independently developed
+, independently tested, and then inserted into the main application. In turn, the size of the main application is
+less.
 Hot fix: Hot fix is ​​reflected in bug fixes. It does not require re-release and re-installation to fix known bugs.
-Use PathClassLoader and DexClassLoader to load the class with the same name as the bug class, replace the bug class, and then fix the bug. The principle is to prevent the class from being marked with CLASS_ISPREVERIFIED when the app is packaged, and then dynamically change the BaseDexClassLoader object indirect reference during hot fix. The dexElements, replace the old class.
+Use PathClassLoader and DexClassLoader to load the class with the same name as the bug class, replace the bug class,
+and then fix the bug. The principle is to prevent the class from being marked with CLASS_ISPREVERIFIED when the app 
+is packaged, and then dynamically change the BaseDexClassLoader object indirect reference during hot fix. The 
+dexElements, replace the old class.
 
 At present, the hot fix framework is mainly divided into two categories:
 
@@ -291,7 +306,8 @@ Tinker: Modify the dex array element.
 **Hot patch**
 
     Reason: Because the storage method id in a dvm uses the short type, the method in dex cannot exceed 65,536.
-    Principle: The compiled class file is split into two dex, bypassing the limit of the number of dex methods and checking during installation, and dynamically loading the second dex file at runtime. Use Dexclassloader.
+    Principle: The compiled class file is split into two dex, bypassing the limit of the number of dex methods 
+    and checking during installation, and dynamically loading the second dex file at runtime. Use Dexclassloader.
 
 **dynamic loading (also known as plugin technology)**
 
@@ -371,116 +387,6 @@ Statistical start time, standard
 
 ** Sixth, performance optimization**
 
-**Android Optimization**
-
-Performance optimization
-
-    1). Controlling the use of Service If the application needs to use the Service to perform background tasks, the Service should only be run when the task is executing. When starting a Service, the system will tend to reserve the process that the Service depends on, and the number of processes that the system can cache in the LRUcache will also be reduced, resulting in more performance when switching programs. We can use the IntentService, which will automatically stop when the background task finishes executing, avoiding the memory leak of the Service.
-    
-    2). Freeing the memory when the interface is invisible When the user opens another program and our program interface is no longer visible, we should release all the resources related to the interface. Rewrite the Activity's onTrimMemory() method, and then listen to the TRIM_MEMORY_UI_HIDDEN level in this method. Once the trigger indicates that the user has left the program, the resource release operation can be performed.
-    
-    3). When the memory is tight, free memory onTrimMemory () method There are many other types of callbacks, you can notify us when the phone memory is reduced, we should decide how to release the application according to the level passed in the callback. Resources.
-    
-    4). Avoid wasting memory on Bitmap When reading a Bitmap image, don't load the unwanted resolution. You can compress images and other operations.
-    
-    5). Using optimized data collections Android provides a set of optimized data collection tool classes, such as SparseArray, SparseBooleanArray, and LongSparseArray. Using these APIs can make our programs more efficient. The HashMap utility class is relatively inefficient because it requires an object entry for each key-value pair, and SparseArray avoids the time when the underlying data type is converted to the object data type.
-
-Layout optimization
-
-
-    1). Reuse layout files
-    
-    Tags can allow you to introduce another layout into a layout. For example, if all the interfaces of our program have a common part, the best way to do this is to extract the public part into a separate layout, and then each The layout of the interface is used to reference this public layout.
-    
-    
-    Tips: If we want to override the layout property in the label, we must also override the layout_width and layout_height properties, otherwise the override effect will not take effect.
-    
-    
-    Tags are used as a secondary extension to tags, and their primary purpose is to prevent extra layout nesting when referring to files when referring to layout files. The more nested the layout, the more time-consuming it takes to parse and the worse the performance. So when writing a layout file, you should make the number of nested layers as small as possible.
-    
-    
-    Example: For example, use a layout inside a LinearLayout. There is another LinearLayout inside, so there are extra layout nesting, and using merge can solve this problem.
-    
-    
-    2). Load the layout only when needed
-    
-    
-    The elements in a layout are not displayed together. In general, only some commonly used elements are displayed, and those that are not commonly used are only displayed when the user performs a specific operation.
-    
-    
-    For example: when filling in the information, it is not necessary to fill in all. There is an option to add more fields. When the user needs to add other information, the other elements are displayed on the interface. With the performance of VISIBLE performance, you can use ViewStub.
-    
-    
-    ViewStub is also a kind of View, but it has no size, no drawing function, no participation in layout, and resource consumption is very low. It can be considered that performance is not affected at all.
-
-![image](https://user-gold-cdn.xitu.io/2017/11/21/15fdc4cfd6f2531a?imageslim)
-
-    Tips: The layout loaded by ViewStub is not available for tags, so this may result in redundant nested structures in the loaded layout.
-    
-    High performance coding optimization
-    
-    
-    All are micro-optimized, and there is no significant improvement in performance. Using the right algorithms and data structures is the primary means of optimizing program performance.
-    
-    
-    1). Avoid creating unnecessary objects Unnecessary objects We should avoid creating:
-    
-    If there is a string that needs to be spliced, then you can use StringBuffer or StringBuilder for splicing instead of the plus sign, because using the plus sign will create extra objects. The longer the spliced ​​string, the plus sign. The lower the performance.
-    
-    
-    When the return value of a method is a String, it is usually necessary to determine what the role of the String is. If you know that the caller will perform the splicing operation on the returned String, you can consider returning a StringBuffer object instead. You can return a reference to an object, and returning a String creates a temporary object with a short lifecycle.
-    
-    
-    Create temporary objects as little as possible, and fewer objects mean fewer GC operations.
-    
-    
-    2). Without special reasons, try to use the basic data type instead of the encapsulated data type. Int is more efficient than Integer, and the other data types are the same.
-    
-    
-    An array of primitive data types is also better than an array of object data types. The other two parallel arrays are more efficient than a packaged array of objects. For example, arrays like Foo[] and Bar[] are more efficient than an array like Custom(Foo,Bar)[]. many.
-    
-    
-    3). Static is better than abstract
-    
-    
-    If you don't need to access some of the fields in a pair, just want to call some of its methods to complete a common function, then you can set this method to a static method, the call speed is increased by 15%-20 %, at the same time, there is no need to specifically create an object in order to call this method, and there is no need to worry about whether the state of the object will be changed after calling this method (static methods cannot access non-static fields).
-    
-    4). Use static final modifiers for constants
-    
-    Static int intVal = 42; static String strVal = "Hello, world!";  
-    The compiler will generate an initial method for the above code, called a method, which will be called when the class is first used. This method assigns the value of 42 to intVal and extracts a reference from the string constant table to strVal. When the assignment is complete, we can access the specific values ​​by field search.
-
-
-    Final optimization:
-    
-    Static final int intVal = 42; static final String strVal = "Hello, world!";  
-    This way, defining the class does not require a method, because all constants are initialized in the initializer of the dex file. When we call intVal we can point directly to the value of 42, and calling strVal will use a relatively lightweight string constant instead of the field search.
-    
-    
-    This optimization is only valid for primitive data types and constants of type String, and is not valid for constants of other data types.
-    
-    
-    5). Use enhanced for loop syntax
-    
-    Static class Counter { int mCount; } Counter[] mArray = ... public void zero() { int sum = 0; for (int i = 0; i < mArray.length; ++i) { sum += mArray[ i].mCount; } } public void one() { int sum = 0; Counter[] localArray = mArray; int len ​​= localArray.length; for (int i = 0; i < len; ++i) { sum + = localArray[i].mCount; } } public void two() { int sum = 0; for (Counter a : mArray) { sum += a.mCount; } }
-    Zero() is the slowest, the length of mArray is calculated every time, one() is much faster, two()fangfa is the fastest running on JIT (Just In Time Compiler) devices, and there is JIT The running efficiency of the device is comparable to the one() method. It should be noted that this writing method is only supported after JDK1.5.
-    
-    Tips: The ArrayList handwritten loop is faster than the enhanced for loop, which is not the case with other collections.
-    
-    So the enhanced for loop is used by default, and the traversal ArrayList uses the traditional looping method.
-    
-    6). Use system packaged APIs
-    
-    The Api that the system can't provide can't be done without the functions we need, because the Api using the system is much faster than the code we write ourselves. Many of their functions are performed through the underlying assembly mode. 
-    
-    For example, the function of implementing array copying, it is feasible to use the loop method to assign each element in the array one by one, but directly using the System.arraycopy() method provided in the system will make the execution efficiency more than 9 times faster. .
-    
-    7). Avoid calling the Getters/Setters method internally
-    
-    The idea of ​​encapsulation in object-oriented is not to expose the fields inside the class to the outside, but to provide specific methods to allow external operations on the internal fields of the corresponding class. But in Android, field search is much more efficient than method calls, and we can access a field directly 3 to 7 times faster than the getters method.
-    
-    
-    But writing code is still based on object-oriented thinking, we should optimize where we can optimize, such as avoiding calling getters/setters internally.
 
 How to perform performance analysis and optimization for Android apps?
 
@@ -504,7 +410,8 @@ Custom View Considerations
 
 Render frame rate, memory
 
-Now the download speed is very slow, try to analyze the reasons from the perspective of the network protocol, and optimize (hint: the 5 layers of the network can be involved).
+Now the download speed is very slow, try to analyze the reasons from the perspective of the network
+protocol, and optimize (hint: the 5 layers of the network can be involved).
 
 Https request slow solution (hint: DNS, carry data, direct access to IP)
 
@@ -534,11 +441,19 @@ Http://blog.csdn.net/singwhatiwanna/article/details/17041691
 
 AIDL (Android Interface Definition Language) is an IDL language used to generate code for interprocess communication (IPC) between two processes on an Android device. If you want to call an operation of another process (such as a Service) object in a process (such as an Activity), you can use AIDL to generate serializable parameters. The AIDL IPC mechanism is interface oriented, like COM or Corba, but more lightweight. It uses a proxy class to pass data between the client and the implementation.
 
-    AIDL's full name Android Interface Definition Language is an interface description language. The compiler can generate a piece of code through the aidl file to achieve the purpose of cross-border access to the internal communication process of two processes through a predefined interface. AIDL The IPC mechanism is similar to COM or CORBA and is interface based, but it is lightweight. It uses a proxy class to pass values ​​between the client and the implementation layer. If you want to use AIDL, you need to do two things: 1. Introduce the relevant class of AIDL. 2. Call the class generated by aidl.
-    In theory, parameters can pass primitive data types and Strings, as well as Bundle derived classes, but in Eclipse, the current ADT does not support Bundles as arguments.
+    AIDL's full name Android Interface Definition Language is an interface description language.
+    The compiler can generate a piece of code through the aidl file to achieve the purpose of cross-
+    border access to the internal communication process of two processes through a predefined interface
+    . AIDL The IPC mechanism is similar to COM or CORBA and is interface based, but it is lightweight. 
+    It uses a proxy class to pass values ​​between the client and the implementation layer. If you want
+    to use AIDL, you need to do two things: 1. Introduce the relevant class of AIDL. 2. Call the class
+    generated by aidl.In theory, parameters can pass primitive data types and Strings, as well as Bundle derived classes,
+    but in Eclipse, the current ADT does not support Bundles as arguments.
     The specific implementation steps are as follows:
-    1. Create an AIDL file, define an interface in this file, which defines methods and properties that are accessible to the client.
-    2, compile the AIDL file, with Ant, you may need to manually, using the Eclipse plugin, you can automatically produce java files and compile according to the adil file, no human intervention.
+    1. Create an AIDL file, define an interface in this file, which defines methods and properties that
+    are accessible to the client.
+    2, compile the AIDL file, with Ant, you may need to manually, using the Eclipse plugin, you can automatically
+    produce java files and compile according to the adil file, no human intervention.
     3. In the Java file, implement the interface defined in AIDL. The compiler will generate a JAVA interface according to the AIDL interface. This interface has an internal abstract class called Stub that inherits several methods needed to extend the interface and implement remote calls. Next, you need to implement a few custom interfaces yourself.
     4. Provide the interface ITaskBinder to the client. If the service is written, extend the Service and override the onBind() method to return an instance of the class that implements the above interface.
     5, on the server side callback client function. The premise is that when the client gets the IBinder interface, you have to register the callback function, only then, the server side knows which function to call
@@ -582,9 +497,12 @@ IPC:
 
 ![image](https://user-gold-cdn.xitu.io/2017/10/10/a1cd0604f7807e215047053498e6daad?imageslim)
 
-    Communication, using the kernel memory space shared between processes to complete the underlying communication work, the client side and the server side process often use ioctl and other methods to interact with the kernel space driver.
+    Communication, using the kernel memory space shared between processes to complete the underlying 
+    communication work, the client side and the server side process often use ioctl and other methods to 
+    interact with the kernel space driver.
     Binder principle:
-    Binder communication adopts C/S architecture, including Client, Server, ServiceManager and binder drivers. ServiceManager is used to manage various services in the system.
+    Binder communication adopts C/S architecture, including Client, Server, ServiceManager and binder 
+    drivers. ServiceManager is used to manage various services in the system.
 The architecture diagram is as follows:
 
 ![image](https://raw.githubusercontent.com/wangkuiwu/android_applets/master/os/pic/binder/binder_frame.jpg)
@@ -592,12 +510,17 @@ The architecture diagram is as follows:
     Binder four roles:
     Client process: the process that uses the service
     Server process: the process that provides the service
-    The ServiceManager process: converts the Binder name of the character type to a reference to the Binder in the Client, so that the Client can obtain a reference to the Binder entity in the Server through the Binder name.
-    Binder driver: the establishment of Binder communication between processes, the transfer of Binder between processes, the management of Binder reference counting, the transmission and interaction of data packets between processes, and a series of underlying support.
+    The ServiceManager process: converts the Binder name of the character type to a reference to the Binder
+    in the Client, so that the Client can obtain a reference to the Binder entity in the Server through the
+    Binder name.
+    Binder driver: the establishment of Binder communication between processes, the transfer of Binder 
+    between processes, the management of Binder reference counting, the transmission and interaction of 
+    data packets between processes, and a series of underlying support.
     Binder operating mechanism:
     Registration Service: Server Register Service in ServiceManager
     Get the service: Client gets the corresponding Service from ServiceManager
-    Using the service: The client establishes a communication path with the Server process in which the Service is located according to the obtained Service information to interact with the Server.
+    Using the service: The client establishes a communication path with the Server process in which the 
+    Service is located according to the obtained Service information to interact with the Server.
     
 Android Binder is used for process communication. Android applications and system services are running in separate processes, and their communication depends on Binder.
 
@@ -626,7 +549,10 @@ Http://blog4jimmy.com/2018/01/356.html
 Lao Luo:
 Https://blog.csdn.net/luoshengyang/article/details/6618363
 
-    In the Android system, each application runs in a separate process, which also ensures that one of the programs has an exception and does not affect the normal operation of the other application. In many cases, our activity will deal with the service of various systems. Obviously, the activity and system service we write in the program are definitely not the same process, but how do they communicate with each other?
+    In the Android system, each application runs in a separate process, which also ensures that one of the 
+    programs has an exception and does not affect the normal operation of the other application. In many cases,
+    our activity will deal with the service of various systems. Obviously, the activity and system service we 
+    write in the program are definitely not the same process, but how do they communicate with each other?
 
 
     So Binder is one of the ways to implement interprocess communication (IPC) in android.
@@ -635,10 +561,13 @@ Https://blog.csdn.net/luoshengyang/article/details/6618363
 1). First, Binder is divided into two processes: Client and Server.
 
 
-    Note that Client and Server are relative. Who sent the message, who is the Client, who receives the message, who is the Server.
+    Note that Client and Server are relative. Who sent the message, who is the Client, who receives the message,
+    who is the Server.
     
     
-    For example, two processes A and B use Binder communication, process A sends a message to process B, then A is Binder Client, B is Binder Server; process B sends a message to process A, then B is Binder Client, A is Binder Server - in fact, although it is simple, but still not very rigorous, we understand this first.
+    For example, two processes A and B use Binder communication, process A sends a message to process B, then 
+    A is Binder Client, B is Binder Server; process B sends a message to process A, then B is Binder Client, 
+    A is Binder Server - in fact, although it is simple, but still not very rigorous, we understand this first.
 
 
 2). Secondly, let's look at the following picture (excerpted from the blog of Tian Weishu), which basically explains the deconstruction of Binder's composition:
@@ -650,10 +579,15 @@ The IPC in the figure is the meaning of interprocess communication.
 The ServiceManager in the figure is responsible for registering the Binder Server into a container.
 
 
-    Some people compare ServiceManager to a telephone office and store the landline phone number of each home. It is still quite appropriate. Zhang San called Li Si, dialed the telephone number, and then transferred to the telephone office. The operator of the telephone office checked the address of the telephone number. Because Li Si’s telephone number was registered with the telephone office before, it can be dialed. If you do not register, you will be prompted that the number does not exist.
+    Some people compare ServiceManager to a telephone office and store the landline phone number of each home
+    . It is still quite appropriate. Zhang San called Li Si, dialed the telephone number, and then transferred
+    to the telephone office. The operator of the telephone office checked the address of the telephone number.
+    Because Li Si’s telephone number was registered with the telephone office before, it can be dialed. If you 
+    do not register, you will be prompted that the number does not exist.
     
     
-    In contrast to the Android Binder mechanism, against the above picture, Zhang San is the Binder Client, Li Si is the Binder Server, and the telephone office is the ServiceManager. The operator of the telephone office has done a lot of things in this process, corresponding to the Binder driver in the figure.
+    In contrast to the Android Binder mechanism, against the above picture, Zhang San is the Binder Client, Li
+    Si is the Binder Server, and the telephone office is the ServiceManager. The operator of the telephone office has done a lot of things in this process, corresponding to the Binder driver in the figure.
 
 
 3). Next, let's look at the process of Binder communication, or take a picture from the Tianwei blog:
@@ -663,17 +597,22 @@ The ServiceManager in the figure is responsible for registering the Binder Serve
 Note: The SM in the figure is also the ServiceManager.
 
 
-    We see that the Client wants to call the Server's add method directly, it is not possible, because they are in different processes, this time you need Binder to help.
+    We see that the Client wants to call the Server's add method directly, it is not possible, because they are
+    in different processes, this time you need Binder to help.
     
     
     The first is that Server is registered in the SM container.
     
-    Secondly, if the client wants to call the add method of the server, it needs to obtain the Server object first, but the SM does not return the real Server object to the Client, but returns a proxy object of the Server to the Client, which is the Proxy.
+    Secondly, if the client wants to call the add method of the server, it needs to obtain the Server object 
+    first, but the SM does not return the real Server object to the Client, but returns a proxy object of the
+    Server to the Client, which is the Proxy.
     
-    Then, the Client calls the add method of the Proxy, and the SM will help him to call the add method of the Server and return the result to the Client.
+    Then, the Client calls the add method of the Proxy, and the SM will help him to call the add method of the
+    Server and return the result to the Client.
     
     
-    The above 3 steps, Binder driver has a lot of power, but we do not need to know the underlying implementation of the Binder driver, involving C + + code - to spend more time to do more meaningful things.
+    The above 3 steps, Binder driver has a lot of power, but we do not need to know the underlying implementation
+    of the Binder driver, involving C + + code - to spend more time to do more meaningful things.
 
 2. Why does android choose Binder to achieve interprocess communication?
 
@@ -695,14 +634,29 @@ Binder principle:
 
     1. When the Activity and Service communicate, Binder is used.
         1. When belonging to the same process, we can inherit Binder and then operate the Service in the Activity.
-        2. When not belonging to the same process, then use AIDL to let the system create a Binder for us, and then operate the remote Service in the Activity.
+        2. When not belonging to the same process, then use AIDL to let the system create a Binder for us, 
+        and then operate the remote Service in the Activity.
     2. The Binder generated by the system:
-        1. Stub class: id of the interface method, there is the identity of the Binder, there is asInterface (IBinder) (Let us get the interface that implements Binder in the Activity, the implementation of the interface is in the Service, return the Stub when the same process, otherwise return Proxy), there is onTransact () this method is to allow the Proxy to remotely call the Activity in the different processes to achieve the Activity operation Service
-        2.Proxy class is a proxy, in the Activity side, which is: IBinder mRemote (this is the remote Binder), the implementation of the two interfaces is only the proxy or the actual operation in the remote onTransact ().
-    3. At the end of the Binder is a copy, the end can be operated by the other end, because the Binder body can operate the local thing when it is defined. So you can pass the Binder on the Activity side, let the Service side operate on it as a Listener. You can use the RemoteCallbackList container to install the Listener to prevent the Listener from having problems caused by serialization.
-    4. When the Activity side is called to the far end, the current thread will hang and will wake up when the method is processed.
-    5. If an AIDL is too expensive to use a Service, you can use the Binder pool to create an AIDL. The method is to return IBinder, and then return the specific AIDL according to the parameters passed in the method.
-    6. IPC methods are: Bundle (incoming when Intent is started, but one-time), file sharing (for SharedPreference is a special case, because it will have a cache in memory), using Messenger (the underlying is also used AIDL, which side to operate the same, on which side to define Messenger), AIDL, ContentProvider (in the process of inheriting the implementation of a ContentProvider, in the addition, deletion and change method call the SQLite of the process, query in other processes), Socket
+        1. Stub class: id of the interface method, there is the identity of the Binder, there is asInterface 
+        (IBinder) (Let us get the interface that implements Binder in the Activity, the implementation of the 
+        interface is in the Service, return the Stub when the same process, otherwise return Proxy), there is 
+        onTransact () this method is to allow the Proxy to remotely call the Activity in the different processes
+        to achieve the Activity operation Service
+        2.Proxy class is a proxy, in the Activity side, which is: IBinder mRemote (this is the remote Binder), 
+        the implementation of the two interfaces is only the proxy or the actual operation in the remote onTransact ().
+    3. At the end of the Binder is a copy, the end can be operated by the other end, because the Binder body can
+    operate the local thing when it is defined. So you can pass the Binder on the Activity side, let the Service
+    side operate on it as a Listener. You can use the RemoteCallbackList container to install the Listener to prevent
+    the Listener from having problems caused by serialization.
+    4. When the Activity side is called to the far end, the current thread will hang and will wake up when the method
+    is processed.
+    5. If an AIDL is too expensive to use a Service, you can use the Binder pool to create an AIDL. The method is to
+    return IBinder, and then return the specific AIDL according to the parameters passed in the method.
+    6. IPC methods are: Bundle (incoming when Intent is started, but one-time), file sharing (for SharedPreference 
+    is a special case, because it will have a cache in memory), using Messenger (the underlying is also used AIDL, 
+    which side to operate the same, on which side to define Messenger), AIDL, ContentProvider (in the process of 
+    inheriting the implementation of a ContentProvider, in the addition, deletion and change method call the SQLite
+    of the process, query in other processes), Socket
 
 Please introduce NDK
 
@@ -1380,7 +1334,9 @@ The memory cache is based on the LruCache implementation, and the disk cache is 
 
 The LRU algorithm can be described in one sentence as follows:
 
-    LRU is the abbreviation of Least Recently Used. The algorithm has not been used for a long time. As its name suggests, its core principle is that if a data has not been used in the recent period, then the possibility of being accessed in the future is also If it is small, such data items will be eliminated first.
+    LRU is the abbreviation of Least Recently Used. The algorithm has not been used for a long time. As its 
+    name suggests, its core principle is that if a data has not been used in the recent period, then the possibility
+    of being accessed in the future is also If it is small, such data items will be eliminated first.
 
 The principle of LruCache is to use LinkedHashMap to hold strong references to objects and to eliminate objects according to Lru algorithm. Specifically, let's assume that we access the data from the end of the table and delete the data in the header. When the accessed data item exists in the linked list, the data item is moved to the end of the table, otherwise a new data item is created at the end of the table. When the linked list capacity exceeds a certain threshold, the data of the header is removed.
 
@@ -1398,7 +1354,8 @@ DiskLruCache is similar to LruCache in that it only adds a journal file to manag
     DIRTY 1517126350519
     CLEAN 1517126350519 5325928
     REMOVE 1517126350519
-Note: The cache directory here is the application's cache directory /data/data/pckagename/cache. The unrooted mobile phone can enter the directory or copy the entire directory by the following command:
+Note: The cache directory here is the application's cache directory /data/data/pckagename/cache. The unrooted 
+mobile phone can enter the directory or copy the entire directory by the following command:
 
     //Enter the /data/data/pckagename/cache directory
     Adb shell
@@ -1415,7 +1372,8 @@ The third line: 1, the version number of the App, passed in through the open () 
 The fourth line: 1, each key corresponds to several files, generally 1.
 Fifth line: blank line
 Line 6 and subsequent lines: Cache operation records.
-The sixth line and subsequent lines represent the cache operation record. For the operation record, we need to understand the following three points:
+The sixth line and subsequent lines represent the cache operation record. For the operation record, we need to 
+understand the following three points:
 
 DIRTY indicates that an entry is being written. There are two cases of writing. If it succeeds, it will write a line of CLEAN records. If it fails, it will add a row of REMOVE records. Note that records with only DIRTY status alone are illegal.
 A REMOVE record is also written when the remove(key) method is called manually.
@@ -1490,12 +1448,14 @@ Http://www.trinea.cn/android/performance/
     Layout optimization: Minimize the hierarchy of layout files
     Minimize the hierarchy of layout files
     Remove useless controls and hierarchies in the layout, and selectively use a higher performance ViewGroup
-    Using tags, ViewStub, and layout reuse can reduce the level of layout (ViewStub provides on-demand loading, loading ViewStub layouts into memory when needed, improving initialization efficiency)
+    Using tags, ViewStub, and layout reuse can reduce the level of layout (ViewStub provides on-demand loading,
+    loading ViewStub layouts into memory when needed, improving initialization efficiency)
     Avoid over drawing
     
     Drawing optimization: View's onDraw() method avoids performing a lot of operations.
     Do not create new layout objects in onDraw().
-    OnDraw() does not do time-consuming tasks, and a large number of loops preempt the cpu time slice, causing the drawing of the View to be unsmooth.
+    OnDraw() does not do time-consuming tasks, and a large number of loops preempt the cpu time slice, 
+    causing the drawing of the View to be unsmooth.
     
     Memory leak optimization
     Avoid writing memory leak codes
@@ -1530,18 +1490,35 @@ Java reference type classification:
 
 ![image](https://user-gold-cdn.xitu.io/2017/10/10/29c884389e96babb2759b95014628aae?imageslim)
 
-    In the development of Android applications, in order to prevent memory overflow, when dealing with some objects that occupy large memory and have a long declaration period, you can apply soft reference and weak reference technology as much as possible.
-    A soft/weak reference can be used in conjunction with a reference queue (ReferenceQueue). If the object referenced by the soft reference is reclaimed by the garbage collector, the Java virtual machine will add the soft reference to the reference queue associated with it. Use this queue to know the list of soft/weak referenced objects being reclaimed, thereby clearing expired soft/weak references for the buffer.
-    If you just want to avoid OOM exceptions, you can use soft references. If you are more concerned about the performance of your application and want to reclaim some objects that take up a lot of memory as soon as possible, you can use weak references.
-    It is possible to judge whether to select a soft reference or a weak reference depending on whether the object is frequently used. If the object may be used frequently, try to use soft references. If the object is more likely to be unused, you can use weak references.
+    In the development of Android applications, in order to prevent memory overflow, when dealing with some 
+    objects that occupy large memory and have a long declaration period, you can apply soft reference and w
+    eak reference technology as much as possible.
+    A soft/weak reference can be used in conjunction with a reference queue (ReferenceQueue). If the object 
+    referenced by the soft reference is reclaimed by the garbage collector, the Java virtual machine will 
+    add the soft reference to the reference queue associated with it. Use this queue to know the list of 
+    soft/weak referenced objects being reclaimed, thereby clearing expired soft/weak references for the buffer.
+    If you just want to avoid OOM exceptions, you can use soft references. If you are more concerned about 
+    the performance of your application and want to reclaim some objects that take up a lot of memory as 
+    soon as possible, you can use weak references.
+    It is possible to judge whether to select a soft reference or a weak reference depending on whether the
+    object is frequently used. If the object may be used frequently, try to use soft references. If the 
+    object is more likely to be unused, you can use weak references.
 
 
     
 **Android long connection, how to deal with the heartbeat mechanism. **
 
-    Long connection: After the connection is established, the connection is not actively disconnected. The two parties send data to each other, and do not actively disconnect after the transmission is completed. After that, the data that needs to be sent continues to be sent through this connection.
-    Heartbeat package: In fact, it is mainly to prevent NAT timeout. The client sends a data actively after a period of time to detect whether the connection is disconnected.
-    The server processes the heartbeat packet: If the client heartbeat interval is fixed, then if the server does not receive the heartbeat after the connection is idle for more than this time, the server can be considered to be dropped and the connection is closed. If the client heartbeat changes dynamically, a maximum value should be set. If the maximum value is exceeded, the other party is considered to be offline. There is also a case where the server actively sends a message to the client through the TCP connection and a write timeout occurs, and the other party can directly think that the other party is offline.
+    Long connection: After the connection is established, the connection is not actively disconnected. 
+    The two parties send data to each other, and do not actively disconnect after the transmission is 
+    completed. After that, the data that needs to be sent continues to be sent through this connection.
+    Heartbeat package: In fact, it is mainly to prevent NAT timeout. The client sends a data actively 
+    after a period of time to detect whether the connection is disconnected.
+    The server processes the heartbeat packet: If the client heartbeat interval is fixed, then if the 
+    server does not receive the heartbeat after the connection is idle for more than this time, the server
+    can be considered to be dropped and the connection is closed. If the client heartbeat changes dynamically,
+    a maximum value should be set. If the maximum value is exceeded, the other party is considered to be offline.
+    There is also a case where the server actively sends a message to the client through the TCP connection and 
+    a write timeout occurs, and the other party can directly think that the other party is offline.
 
 **CrashHandler implementation principle**
 
@@ -1556,13 +1533,18 @@ Java reference type classification:
     
     <category android:name="android.intent.category.LAUNCHER" />
     Activity,
-    So this launcher will put the icon and put it on the main interface. When the user clicks on the icon, an Intent is issued:
+    So this launcher will put the icon and put it on the main interface. When the user clicks on the icon, an 
+    Intent is issued:
     
     Intent intent = mActivity.getPackageManager().getLaunchIntentForPackage(packageName);
     mActivity.startActivity(intent);   
-    Jump over to jump to any allowed page, such as a program can be downloaded, then the actual downloaded page may not be the home page (and possibly the home page), then construct an Intent, startActivity.
-    The action in this intent may have multiple views, and download is possible. The system will select the programs or pages that can be opened for your Intent based on the functions registered by the third-party program to the system. So the only point
-    The difference is that the action of the intent initiated from the click of the icon is relatively singular, and jumps from the program or starts with more styles. The essence is the same.
+    Jump over to jump to any allowed page, such as a program can be downloaded, then the actual downloaded page 
+    may not be the home page (and possibly the home page), then construct an Intent, startActivity.
+    The action in this intent may have multiple views, and download is possible. The system will select the programs
+    or pages that can be opened for your Intent based on the functions registered by the third-party program to the
+    system. So the only point
+    The difference is that the action of the intent initiated from the click of the icon is relatively singular, and
+    jumps from the program or starts with more styles. The essence is the same.
 
 
 **FC (Force Close)**
@@ -1582,26 +1564,46 @@ Use the Thread.UncaughtExceptionHandler interface
 
     Too much overlapping background (overdraw)
     
-    This problem is actually the easiest to solve. The suggestion is to check the background you set in the layout and code. Some backgrounds are hidden underneath. It can never be displayed. This unnecessary background must be removed because it is very likely Will seriously affect the performance of the app. If you use the background of the selector, set the color of the normal state to "@android:color/transparent", which can also solve the problem.
+    This problem is actually the easiest to solve. The suggestion is to check the background you set in the 
+    layout and code. Some backgrounds are hidden underneath. It can never be displayed. This unnecessary background
+    must be removed because it is very likely Will seriously affect the performance of the app. If you use the
+    background of the selector, set the color of the normal state to "@android:color/transparent", which can also
+    solve the problem.
     
     Too many overlapping views
     
-    The first recommendation is to use ViewStub to load some less common layouts. It's a lightweight and default view that is invisible. It can dynamically load a layout, as long as you use this overlapping View. , postponed loading time.
+    The first recommendation is to use ViewStub to load some less common layouts. It's a lightweight and default
+    view that is invisible. It can dynamically load a layout, as long as you use this overlapping View. , postponed 
+    loading time.
     
-    The second suggestion is: If you use a combination like Viewpager+Fragment or have multiple Fragments on an interface, you need to control the display and hiding of the Fragment. Try to use the dynamic Inflation view, which is better than SetVisibility.
+    The second suggestion is: If you use a combination like Viewpager+Fragment or have multiple Fragments on an 
+    interface, you need to control the display and hiding of the Fragment. Try to use the dynamic Inflation view,
+    which is better than SetVisibility.
     
     Complex layout level
     
-    There are more suggestions here. First, we recommend using the layout tool Hierarchy Viewer provided by Android to check and optimize the layout. The first suggestion is that if the nested linear layout deepens the layout hierarchy, you can use a relative layout instead. The second suggestion is to use labels to merge layouts. The third recommendation is to use the label to reuse the layout, and extracting the common layout can make the logic of the layout clearer. Remember, the ultimate goal of these suggestions is to make your layout wider and shallower in the Hierarchy Viewer than narrow and deep.
+    There are more suggestions here. First, we recommend using the layout tool Hierarchy Viewer provided by Android 
+    to check and optimize the layout. The first suggestion is that if the nested linear layout deepens the layout
+    hierarchy, you can use a relative layout instead. The second suggestion is to use labels to merge layouts. The
+    third recommendation is to use the label to reuse the layout, and extracting the common layout can make the 
+    logic of the layout clearer. Remember, the ultimate goal of these suggestions is to make your layout wider 
+    and shallower in the Hierarchy Viewer than narrow and deep.
     
-    Summary: You can consider using merge and include, ViewStub. Try to make the layout shallow, and use the RelactivityLayout as little as possible for the root layout, because RelactivityLayout needs to measure 2 times each time.
+    Summary: You can consider using merge and include, ViewStub. Try to make the layout shallow, and use the 
+    RelactivityLayout as little as possible for the root layout, because RelactivityLayout needs to measure 2 times each time.
 
 **Memory Optimization** 
 
-    The core idea: to reduce memory usage, can not be new, not new, can allocate less allocation. Because allocating more memory means more GCs are generated, each time the GC is triggered, it takes up CPU time and affects performance.
+    The core idea: to reduce memory usage, can not be new, not new, can allocate less allocation. Because
+    allocating more memory means more GCs are generated, each time the GC is triggered, it takes up CPU time and 
+    affects performance.
     
-    Collection optimization: Android provides a series of optimized data collection tool classes, such as SparseArray, SparseBooleanArray, LongSparseArray, which can make our program more efficient. The HashMap utility class is relatively inefficient because it requires an object entry for each key-value pair, and SparseArray avoids the time when the underlying data type is converted to the object data type.
-    Bitmap optimization: When reading a Bitmap image, don't load the unwanted resolution. You can compress images and other operations.
+    Collection optimization: Android provides a series of optimized data collection tool classes, such as
+    SparseArray, SparseBooleanArray, LongSparseArray, which can make our program more efficient. The HashMap 
+    utility class is relatively inefficient because it requires an object entry for each key-value pair, and 
+    SparseArray avoids the time when the underlying data type is converted to the object data type.
+    Bitmap optimization: When reading a Bitmap image, don't load the unwanted resolution. You can compress 
+    images and other operations.
     Try to avoid using the dependency injection framework.
     Avoid creating unnecessary objects: String splicing uses StringBuffer, StringBuilder.
     Do not create objects in the onDraw method.
@@ -1611,47 +1613,76 @@ Use the Thread.UncaughtExceptionHandler interface
 ** Several points for mobile data to optimize network data**
 
     Connection multiplexing: saves connection setup time, such as enabling keep-alive.
-    For Android, HttpURLConnection and HttpClient both have keep-alive enabled by default. Just 2.2 before HttpURLConnection has a bug affecting the connection pool, specifically visible: Android HttpURLConnection and HttpClient selection
+    For Android, HttpURLConnection and HttpClient both have keep-alive enabled by default. Just 2.2 before 
+    HttpURLConnection has a bug affecting the connection pool, specifically visible: Android HttpURLConnection
+    and HttpClient selection
     
-    Request merge: Combine multiple requests into one request, the more common is the CSS Image Sprites in the web page. If there are too many requests within a page, you can also consider doing a certain request merge.
+    Request merge: Combine multiple requests into one request, the more common is the CSS Image Sprites in 
+    the web page. If there are too many requests within a page, you can also consider doing a certain request merge.
     
-    Reduce the size of the request data: for post requests, the body can be gzipped, and the header can also do data compression (but only supports http 2.0).
-    The body of the returned data can also be gzipped, and the body data volume can be reduced to about 30%. (It is also possible to consider the volume of the key data of the returned json data, especially for the case where the return data format does not change much, and the data returned by Alipay chat is used)
+    Reduce the size of the request data: for post requests, the body can be gzipped, and the header can also
+    do data compression (but only supports http 2.0).
+    The body of the returned data can also be gzipped, and the body data volume can be reduced to about 30%.
+    (It is also possible to consider the volume of the key data of the returned json data, especially for the
+    case where the return data format does not change much, and the data returned by Alipay chat is used)
     According to the user's current network quality to determine what quality pictures to download (more commercial)
 
 **Android system architecture**
 
 ![image](https://upload-images.jianshu.io/upload_images/2893137-1047c70c15c1589b.png?imageMogr2/auto-orient)
 
-    The android system architecture, like its operating system, uses a layered architecture. From the architecture diagram, android is divided into four layers, from the upper layer to the lower layer are the application layer, the application framework layer, the system runtime layer and the linux core layer.
+    The android system architecture, like its operating system, uses a layered architecture. From the architecture
+    diagram, android is divided into four layers, from the upper layer to the lower layer are the application layer, 
+    the application framework layer, the system runtime layer and the linux core layer.
     　　Application 
-    　　Android will be released with the same series of core application packages, including email client, SMS short message program, calendar, map, browser, contact manager and so on. All applications are written in the Java language.
+    　　Android will be released with the same series of core application packages, including email client, SMS short
+      message program, calendar, map, browser, contact manager and so on. All applications are written in the Java 
+      language.
     　　2. Application framework 
-    　　Developers also have full access to the API framework used by the core application. The application's architectural design simplifies component reuse; any application can publish its function blocks and any other application can use its published function blocks (although the framework's security restrictions are followed). Similarly, the application reuse mechanism also allows users to easily replace program components.
+    　　Developers also have full access to the API framework used by the core application. The application's 
+      architectural design simplifies component reuse; any application can publish its function blocks and any 
+      other application can use its published function blocks (although the framework's security restrictions 
+      are followed). Similarly, the application reuse mechanism also allows users to easily replace program components.
     　　Hidden behind each application is a series of services and systems, including;
-    　　* Rich and extensible views (Views) that can be used to build applications, including lists, grids, text boxes, buttons, and even embeddable web browsing Device.
-    　　* Content Providers allow applications to access data from another application (such as a contact database) or share their own data
+    　　* Rich and extensible views (Views) that can be used to build applications, including lists, grids, text boxes,
+      buttons, and even embeddable web browsing Device.
+    　　* Content Providers allow applications to access data from another application (such as a contact database) or 
+      share their own data
     　　* Resource Manager provides access to non-code resources such as local strings, graphics, and layout files.
     　　* Notification Manager allows the application to display custom prompts in the status bar.
     　　* Activity Manager is used to manage the application lifecycle and provide common navigation fallback capabilities.
     　　For more details and how to write an application from scratch, please refer to how to write an Android app.
     3. System runtime 
     　　1) Library
-    　　Android includes some C/C++ libraries that can be used by different components in the Android system. They serve developers through the Android application framework. Here are some core libraries:
-    　　System C library - A standard C system library ( libc ) inherited from BSD that is specifically tailored for embedded linux-based devices.
-    　　 Media Library - Based on PacketVideo OpenCORE; this library supports a variety of commonly used audio and video formats for playback and recording, as well as support for still image files. The encoding formats include MPEG4, H.264, MP3, AAC, AMR, JPG, PNG.
-    　　 Surface Manager - Manages the display subsystem and provides seamless integration of 2D and 3D layers for multiple applications.
+    　　Android includes some C/C++ libraries that can be used by different components in the Android system. They 
+      serve developers through the Android application framework. Here are some core libraries:
+    　　System C library - A standard C system library ( libc ) inherited from BSD that is specifically tailored for
+      embedded linux-based devices.
+    　　 Media Library - Based on PacketVideo OpenCORE; this library supports a variety of commonly used audio and 
+       video formats for playback and recording, as well as support for still image files. The encoding formats 
+       include MPEG4, H.264, MP3, AAC, AMR, JPG, PNG.
+    　　 Surface Manager - Manages the display subsystem and provides seamless integration of 2D and 3D layers 
+       for multiple applications.
     　　 LibWebCore - A new web browser engine that supports Android browsers and an embeddable web view.
     　　SGL - the underlying 2D graphics engine
-    　　 3D libraries - based on OpenGL ES 1.0 APIs; the library can use hardware 3D acceleration (if available) or use highly optimized 3D soft acceleration.
+    　　 3D libraries - based on OpenGL ES 1.0 APIs; the library can use hardware 3D acceleration (if available)
+       or use highly optimized 3D soft acceleration.
     　　 FreeType - Bitmap and vector font display.
     　　* SQLite - A lightweight, relational database engine that is available for all applications.
     　　2) Android runtime
-    　　Android includes a core library that provides most of the functionality of the JAVA programming language core library.
-    　　Every Android application runs in its own process and has a separate Dalvik virtual machine instance. Dalvik is designed as a device that can run multiple virtual systems efficiently and efficiently at the same time. The Dalvik virtual machine executes (.dex) the Dalvik executable, which is optimized for small memory usage. At the same time, the virtual machine is register-based. All classes are compiled by the JAVA compiler and then converted to the .dex format by the virtual machine through the "dx" tool in the SDK.
-    　　The Dalvik virtual machine relies on some features of the Linux kernel, such as the threading mechanism and the underlying memory management mechanism.
+    　　Android includes a core library that provides most of the functionality of the JAVA programming 
+      language core library.
+    　　Every Android application runs in its own process and has a separate Dalvik virtual machine 
+      instance. Dalvik is designed as a device that can run multiple virtual systems efficiently and efficiently
+      at the same time. The Dalvik virtual machine executes (.dex) the Dalvik executable, which is optimized for
+      small memory usage. At the same time, the virtual machine is register-based. All classes are compiled by the 
+      JAVA compiler and then converted to the .dex format by the virtual machine through the "dx" tool in the SDK.
+    　　The Dalvik virtual machine relies on some features of the Linux kernel, such as the threading mechanism and 
+      the underlying memory management mechanism.
     　　4.Linux kernel 
-    Android's core system services rely on the Linux 2.6 kernel such as security, memory management, process management, network protocol stack and driver model. The Linux kernel also serves as an abstraction layer between the hardware and software stacks.
+    Android's core system services rely on the Linux 2.6 kernel such as security, memory management, process management,
+    network protocol stack and driver model. The Linux kernel also serves as an abstraction layer between the hardware 
+    and software stacks.
     
 ![image](https://raw.githubusercontent.com/BeesAndroid/BeesAndroid/master/art/android_system_structure.png)
 
@@ -1680,7 +1711,8 @@ ButterKnife has little impact on performance, because instead of using reflectio
 
 **Activity/Window/View difference, fragment features**
 
-    Activity is like a craftsman (control unit), Window like a window (bearing model), View like a window (display view) LayoutInflater like scissors, Xml configuration like a window drawing.
+    Activity is like a craftsman (control unit), Window like a window (bearing model), View like a window (display view) 
+    LayoutInflater like scissors, Xml configuration like a window drawing.
     
     Call attach in Activity to create a Window
     The created window is its subclass PhoneWindow, creating PhoneWindow in attach
@@ -1697,7 +1729,8 @@ ButterKnife has little impact on performance, because instead of using reflectio
 
 **Event delivery mechanism**
 
-    When the finger touches the screen, the system will call the corresponding View's onTouchEvent and pass in a series of actions.
+    When the finger touches the screen, the system will call the corresponding View's onTouchEvent and pass 
+    in a series of actions.
     
     The execution order of dispatchTouchEvent is:
     
@@ -1707,17 +1740,21 @@ ButterKnife has little impact on performance, because instead of using reflectio
     
     (1) dispatchTouchEvent:
     
-    This method is generally used to initially process events, because the action is dispatched from this, so super.dispatchTouchEvent is usually called. This will continue to call onInterceptTouchEvent, which is then determined by onInterceptTouchEvent.
+    This method is generally used to initially process events, because the action is dispatched from this, 
+    so super.dispatchTouchEvent is usually called. This will continue to call onInterceptTouchEvent, which is then determined by onInterceptTouchEvent.
     
     (2) onInterceptTouchEvent:
     
-    If the return value is true, the event will be passed to its own onTouchEvent(); if the return value is false, it will be passed to the next View's dispatchTouchEvent();
+    If the return value is true, the event will be passed to its own onTouchEvent(); if the return value is false, 
+    it will be passed to the next View's dispatchTouchEvent();
     
     (3) onTouchEvent():
     
-    If the return value is true, the event is consumed by itself, and subsequent actions let it process; if the return value is false, it does not consume the event itself, and returns to the other parent's onTouchEvent to be processed.
+    If the return value is true, the event is consumed by itself, and subsequent actions let it process; if the 
+    return value is false, it does not consume the event itself, and returns to the other parent's onTouchEvent to be processed.
     
-    Pseudo code of the three method relationships: If the current View intercepts the event, it is handed over to its own onTouchEvent to handle, otherwise it is thrown to the child View to continue the same process.
+    Pseudo code of the three method relationships: If the current View intercepts the event, it is handed over 
+    to its own onTouchEvent to handle, otherwise it is thrown to the child View to continue the same process.
     
     Public boolean dispatchTouchEvent(MotionEvent ev)
     {
@@ -1734,15 +1771,41 @@ ButterKnife has little impact on performance, because instead of using reflectio
     }
     The delivery of onTouchEvent:
     
-    When there are multiple levels of View, this action will continue until the parent level is allowed until the deepest View is encountered. So the touch event first calls the onTouchEvent of the lowest level View. If the view's onTouchEvent receives a touch action and does the corresponding processing, there are two return methods return true and return false; return true will tell the system the current View Need to deal with this touch event, the future system issued ACTION_MOVE, ACTION_UP still need to continue to listen and receive, and this action has been processed, the parent layer View is impossible to trigger onTouchEvent. So each action can only have one onTouchEvent interface that returns true. If it returns false, it will notify the system that the current View does not care about this touch event. At this time, the action will be passed to the parent, calling the onTouchEvent of the parent View. But after this touch event, any action is issued, the View is not accepted, onTouchEvent will not be triggered in this touch event, that is, once View returns false, then ACTION_MOVE, ACTION_UP and other ACTION will not Pass in this View, but the action of the next touch event will still be passed in.
+    When there are multiple levels of View, this action will continue until the parent level is
+    allowed until the deepest View is encountered. So the touch event first calls the onTouchEvent
+    of the lowest level View. If the view's onTouchEvent receives a touch action and does the corresponding
+    processing, there are two return methods return true and return false; return true will tell the system
+    the current View Need to deal with this touch event, the future system issued ACTION_MOVE, ACTION_UP still
+    need to continue to listen and receive, and this action has been processed, the parent layer View is impossible 
+    to trigger onTouchEvent. So each action can only have one onTouchEvent interface that returns true. If it returns 
+    false, it will notify the system that the current View does not care about this touch event. At this time,
+    the action will be passed to the parent, calling the onTouchEvent of the parent View. But after this 
+    touch event, any action is issued, the View is not accepted, onTouchEvent will not be triggered in this
+    touch event, that is, once View returns false, then ACTION_MOVE, ACTION_UP and other ACTION will not 
+    Pass in this View, but the action of the next touch event will still be passed in.
     
     Parent layer's onInterceptTouchEvent
     
-    As mentioned earlier, the underlying View can receive this event with a precondition: if the parent layer allows it. Assuming that the parent level's dispatch method is not changed, the parent's onInterceptTouchEvent method is called before the system calls the underlying onTouchEvent. Whether the parent layer View wants to intercept the action after the touch event. If onInterceptTouchEvent returns true, then all actions after this touch event will not be passed to the deep View, and will be passed to the parent layer's onTouchEvent, which means that the parent layer has intercepted the touch event, and the subsequent action is also You don't have to ask onInterceptTouchEvent, the onInterceptTouchEvent will not be called again after the action that is emitted after this touch event until the next touch event. If onInterceptTouchEvent returns false, then this action will be sent to the deeper View, and each subsequent action will ask the parent layer's onInterceptTouchEvent to not need to intercept this touch event. Only the ViewGroup has the onInterceptTouchEvent method, because an ordinary View is definitely the deepest View, and the touch can be passed to the last station. It will definitely call the View's onTouchEvent().
+    As mentioned earlier, the underlying View can receive this event with a precondition: if the parent 
+    layer allows it. Assuming that the parent level's dispatch method is not changed, the parent's onInterceptTouchEvent
+    method is called before the system calls the underlying onTouchEvent. Whether the parent layer View wants to
+    intercept the action after the touch event. If onInterceptTouchEvent returns true, then all actions after 
+    this touch event will not be passed to the deep View, and will be passed to the parent layer's onTouchEvent,
+    which means that the parent layer has intercepted the touch event, and the subsequent action is also You 
+    don't have to ask onInterceptTouchEvent, the onInterceptTouchEvent will not be called again after the action
+    that is emitted after this touch event until the next touch event. If onInterceptTouchEvent returns false,
+    then this action will be sent to the deeper View, and each subsequent action will ask the parent layer's 
+    onInterceptTouchEvent to not need to intercept this touch event. Only the ViewGroup has the onInterceptTouchEvent
+    method, because an ordinary View is definitely the deepest View, and the touch can be passed to the 
+    last station. It will definitely call the View's onTouchEvent().
     
     The underlying View's getParent().requestDisallowInterceptTouchEvent(true)
     
-    For the underlying View, there is a way to prevent the parent layer's View from getting the touch event, which is to call the getParent().requestDisallowInterceptTouchEvent(true) method. Once the underlying View receives the touch action and then calls this method, the parent layer View will not call onInterceptTouchEvent anymore, nor can it intercept future actions (if the parent layer ViewGroup and the lowest level View need to intercept different focus, or touch of different gestures, Can't use this to write dead).
+    For the underlying View, there is a way to prevent the parent layer's View from getting the touch event, 
+    which is to call the getParent().requestDisallowInterceptTouchEvent(true) method. Once the underlying 
+    View receives the touch action and then calls this method, the parent layer View will not call onInterceptTouchEvent
+    anymore, nor can it intercept future actions (if the parent layer ViewGroup and the lowest level 
+    View need to intercept different focus, or touch of different gestures, Can't use this to write dead).
     
 Http://gityuan.com/2015/09/19/android-touch/
 Https://www.jianshu.com/p/84b2e0038080
@@ -1755,15 +1818,22 @@ http://hanhailong.com/2015/09/24/Android-%E4%B8%89%E5%BC%A0%E5%9B%BE%E6%90%9E%E5
     mScroller.startScroll()
     mScroller.computeScrollOffset()
     view.computeScroll()
-    1. Make some initialization preparations for the slide in mScroller.startScroll(), such as: starting coordinates, sliding distance and direction and duration (with default values), animation start time, etc.
+    1. Make some initialization preparations for the slide in mScroller.startScroll(), such as: starting 
+    coordinates, sliding distance and direction and duration (with default values), animation start time, etc.
     
-    2. The mScroller.computeScrollOffset() method mainly calculates the current coordinate point based on the time that has elapsed. Since the animation time is set in mScroller.startScroll(), it is easy to get the position of the current moment in the computeScrollOffset() method based on the elapsed time and save it in the variables mCurrX and mCurrY. In addition to this, the method can also determine whether the animation has ended.
+    2. The mScroller.computeScrollOffset() method mainly calculates the current coordinate point based on the 
+    time that has elapsed. Since the animation time is set in mScroller.startScroll(), it is easy to get 
+    the position of the current moment in the computeScrollOffset() method based on the elapsed time and 
+    save it in the variables mCurrX and mCurrY. In addition to this, the method can also determine whether 
+    the animation has ended.
 
 **Java and JavaScript interaction in Android**
 
     webView.addJavaScriptInterface(new Object(){xxx}, "xxx");
     1
-    Answer: You can use the WebView control to execute JavaScript scripts and execute Java code in JavaScript. To have the WebView control execute JavaScript, you need to call the WebSettings.setJavaScriptEnabled method with the following code:
+    Answer: You can use the WebView control to execute JavaScript scripts and execute Java code in
+    JavaScript. To have the WebView control execute JavaScript, you need to call the WebSettings.setJavaScriptEnabled 
+    method with the following code:
     
     WebView webView = (WebView)findViewById(R.id.webview);
     WebSettings webSettings = webView.getSettings();
@@ -1771,7 +1841,8 @@ http://hanhailong.com/2015/09/24/Android-%E4%B8%89%E5%BC%A0%E5%9B%BE%E6%90%9E%E5
     webSettings.setJavaScriptEnabled(true);
     webView.setWebChromeClient(new WebChromeClient());
     
-    JavaScript calls Java methods that need to use the WebView.addJavascriptInterface method to set the Java method of the JavaScript call. The code is as follows:
+    JavaScript calls Java methods that need to use the WebView.addJavascriptInterface method to set
+    the Java method of the JavaScript call. The code is as follows:
     
     webView.addJavascriptInterface(new Object()
     {
@@ -1794,9 +1865,16 @@ http://hanhailong.com/2015/09/24/Android-%E4%B8%89%E5%BC%A0%E5%9B%BE%E6%90%9E%E5
 
 **The most essential difference between SurfaceView and View**
 
-    SurfaceView is able to redraw the picture in a new separate thread, and the view must update the picture in the main thread of the UI.
+    SurfaceView is able to redraw the picture in a new separate thread, and the view must update the
+    picture in the main thread of the UI.
     
-    Updating the screen in the main thread of the UI can cause problems. For example, if you update too long, your main UI thread will be blocked by the function you are drawing. Then you will not be able to respond to messages such as buttons and touch screens. When using SurfaceView, it will not block your UI main thread because it updates the screen in a new thread. But this also brings another problem, that is, event synchronization. For example, if you touch the screen for a while, you need thread processing in SurfaceView. Generally, you need to have an event queue design to save touchevent, which is a bit more complicated because it involves thread safety.
+    Updating the screen in the main thread of the UI can cause problems. For example, if you update too long, your
+    main UI thread will be blocked by the function you are drawing. Then you will not be able to respond to messages
+    such as buttons and touch screens. When using SurfaceView, it will not block your UI main thread because it updates 
+    the screen in a new thread. But this also brings another problem, that is, event synchronization. 
+    For example, if you touch the screen for a while, you need thread processing in SurfaceView. Generally, 
+    you need to have an event queue design to save touchevent, which is a bit more complicated because it
+    involves thread safety.
 
 **Android program runtime permissions and file system permissions** 
 
@@ -1898,15 +1976,18 @@ Android interface refresh principle
 ** Can a non-UI thread update the UI?**
 
     can
-    When accessing the UI, ViewRootImpl will call the checkThread method to check which thread is currently accessing the UI. If it is not a UI thread, an exception will be thrown.
-    When the onCreate method is executed, ViewRootImpl has not been created yet. It is impossible to check the current thread. The creation of ViewRootImpl is after the onResume method callback.
+    When accessing the UI, ViewRootImpl will call the checkThread method to check which thread is currently 
+    accessing the UI. If it is not a UI thread, an exception will be thrown.
+    When the onCreate method is executed, ViewRootImpl has not been created yet. It is impossible to check 
+    the current thread. The creation of ViewRootImpl is after the onResume method callback.
     Void checkThread() {
         If (mThread != Thread.currentThread()) {
             Throw new CalledFromWrongThreadException(
                     "Only the original thread that created a view hierarchy can touch its views.");
         }
     }
-    A non-UI thread can refresh the UI, provided that it has its own ViewRoot, ie the thread that updates the UI is the same as the ViewRoot, or the UI is updated before checkThread() is executed.
+    A non-UI thread can refresh the UI, provided that it has its own ViewRoot, ie the thread that updates 
+    the UI is the same as the ViewRoot, or the UI is updated before checkThread() is executed.
 
 **Resolve the method of ScrollView nested ListView and GridView conflict**
 
@@ -1914,10 +1995,23 @@ Https://blog.csdn.net/btt2013/article/details/53447649
 
 **Custom View Optimization Strategy**
 
-    In order to speed up your view, you need to minimize unnecessary code for frequently called methods. Starting with onDraw, you need to pay special attention to things that should not be allocated memory here, because it will cause GC, which will cause the card to be stuck. The action of allocating memory during initialization or animation gaps. Don't do memory allocation while the animation is executing.
-    You also need to reduce the number of times onDraw is called as much as possible. Most of the time, onDraw is called because invalidate() is called. So try to reduce the number of times invaildate() is called. If possible, try to call the invalidate() method with 4 arguments instead of invalidate() with no arguments. An invalidate with no arguments forces a redraw of the entire view.
-    Another very time consuming operation is requesting layout. Executing requestLayout() at any time will cause the Android UI system to traverse the entire View hierarchy to calculate the size of each view. If a conflicting value is found, it will need to be recalculated several times. In addition, you need to keep the level of the View as flat as possible, which is very helpful for improving efficiency.
-    If you have a complex UI, you should consider writing a custom ViewGroup to perform his layout operations. Unlike the built-in view, a custom view allows the program to measure only that part, which avoids traversing the entire view's hierarchy to calculate the size. This PieChart example shows how to inherit ViewGroup as part of a custom view. PieChart has child views, but it never measures them. Instead, set their size directly according to his own layout rules.
+    In order to speed up your view, you need to minimize unnecessary code for frequently called methods.
+    Starting with onDraw, you need to pay special attention to things that should not be allocated memory
+    here, because it will cause GC, which will cause the card to be stuck. The action of allocating memory
+    during initialization or animation gaps. Don't do memory allocation while the animation is executing.
+    You also need to reduce the number of times onDraw is called as much as possible. Most of the time,
+    onDraw is called because invalidate() is called. So try to reduce the number of times invaildate() 
+    is called. If possible, try to call the invalidate() method with 4 arguments instead of invalidate()
+    with no arguments. An invalidate with no arguments forces a redraw of the entire view.
+    Another very time consuming operation is requesting layout. Executing requestLayout() at any time
+    will cause the Android UI system to traverse the entire View hierarchy to calculate the size of each
+    view. If a conflicting value is found, it will need to be recalculated several times. In addition, 
+    you need to keep the level of the View as flat as possible, which is very helpful for improving efficiency.
+    If you have a complex UI, you should consider writing a custom ViewGroup to perform his layout operations. 
+    Unlike the built-in view, a custom view allows the program to measure only that part, which avoids 
+    traversing the entire view's hierarchy to calculate the size. This PieChart example shows how to
+    inherit ViewGroup as part of a custom view. PieChart has child views, but it never measures them.
+    Instead, set their size directly according to his own layout rules.
 
 What is the difference between Gradle's api and implementation in Android Studio 3.0;
 
