@@ -454,28 +454,44 @@ AIDL (Android Interface Definition Language) is an IDL language used to generate
     are accessible to the client.
     2, compile the AIDL file, with Ant, you may need to manually, using the Eclipse plugin, you can automatically
     produce java files and compile according to the adil file, no human intervention.
-    3. In the Java file, implement the interface defined in AIDL. The compiler will generate a JAVA interface according to the AIDL interface. This interface has an internal abstract class called Stub that inherits several methods needed to extend the interface and implement remote calls. Next, you need to implement a few custom interfaces yourself.
-    4. Provide the interface ITaskBinder to the client. If the service is written, extend the Service and override the onBind() method to return an instance of the class that implements the above interface.
-    5, on the server side callback client function. The premise is that when the client gets the IBinder interface, you have to register the callback function, only then, the server side knows which function to call
-    The AIDL syntax is simple and can be used to declare an interface with one or more methods, as well as pass parameters and return values. Due to the need for remote calls, these parameters and return values ​​are not of any type. Here are some of the data types supported by AIDL:
+    3. In the Java file, implement the interface defined in AIDL. The compiler will generate a JAVA 
+    interface according to the AIDL interface. This interface has an internal abstract class called Stub 
+    that inherits several methods needed to extend the interface and implement remote calls. Next, you need
+    to implement a few custom    interfaces yourself.
+    4. Provide the interface ITaskBinder to the client. If the service is written, extend the Service
+    and override the onBind() method to return an instance of the class that implements the above interface.
+    5, on the server side callback client function. The premise is that when the client gets the IBinder
+    interface, you have to register the callback function, only then, the server side knows which function to call
+    The AIDL syntax is simple and can be used to declare an interface with one or more methods, as 
+    well as pass parameters and return values. Due to the need for remote calls, these parameters and 
+    return values ​​are not of any type. Here are some of the data types supported by AIDL:
     
     Simple Java programming language type (int, boolean, etc.) that does not require an import declaration
     String, CharSequence does not require special declaration
-    List, Map and Parcelables types, the data members contained in these types can only be simple data types, String and other types than supported.
+    List, Map and Parcelables types, the data members contained in these types can only 
+    be simple data types, String and other types than supported.
     (Also: I didn't try Parcelables, compile under Eclipse+ADT, but maybe I will support it later).
     There are several principles when implementing an interface:
-    1. Throwing exceptions should not be returned to the caller. It is not advisable to throw exception handling across processes.
-    2. The IPC call is synchronous. If you know that an IPC service takes more than a few milliseconds to complete, you should avoid calling it in the main thread of the Activity. That is, the IPC call will suspend the application and cause the interface to lose response. This situation should be considered a single thread to handle.
+    1. Throwing exceptions should not be returned to the caller. It is not advisable to throw exception
+    handling across processes.
+    2. The IPC call is synchronous. If you know that an IPC service takes more than a few milliseconds
+    to complete, you should avoid calling it in the main thread of the Activity. That is, the IPC call
+    will suspend the application and cause the interface to lose response. This situation should be 
+    considered a single thread to handle.
     3. Static properties cannot be declared in the AIDL interface.
     IPC call steps:
     Declare a variable of the interface type defined in the .aidl file.
     Implement a ServiceConnection.
     Call ApplicationContext.bindService() and pass it in the ServiceConnection implementation.
-    In the ServiceConnection.onServiceConnected() implementation, you will receive an IBinder instance (the called Service).
-    YourInterfaceName.Stub.asInterface((IBinder)service) converts the argument to the YourInterface type.
-    Call the method defined in the interface. You always have to detect a DeadObjectException, which is thrown when the connection is broken. It will only be thrown by remote methods.
+    In the ServiceConnection.onServiceConnected() implementation, you will receive an IBinder 
+    instance (the called Service).
+    YourInterfaceName.Stub.asInterface((IBinder)service) converts the argument to the YourInterface
+    type.
+    Call the method defined in the interface. You always have to detect a DeadObjectException, 
+    which is thrown when the connection is broken. It will only be thrown by remote methods.
     Disconnect, call ApplicationContext.unbindService() in the interface instance
-    Aidl is mainly to help us complete the process of packaging data and unpacking, and call the transact process, and the data packet used for delivery is called parcel.
+    Aidl is mainly to help us complete the process of packaging data and unpacking, and call the 
+    transact process, and the data packet used for delivery is called parcel.
     
     AIDL: xxx.aidl->xxx.java, register service
     
@@ -587,7 +603,8 @@ The ServiceManager in the figure is responsible for registering the Binder Serve
     
     
     In contrast to the Android Binder mechanism, against the above picture, Zhang San is the Binder Client, Li
-    Si is the Binder Server, and the telephone office is the ServiceManager. The operator of the telephone office has done a lot of things in this process, corresponding to the Binder driver in the figure.
+    Si is the Binder Server, and the telephone office is the ServiceManager. The operator of the 
+    telephone office has done a lot of things in this process, corresponding to the Binder driver in the figure.
 
 
 3). Next, let's look at the process of Binder communication, or take a picture from the Tianwei blog:
@@ -1741,17 +1758,19 @@ ButterKnife has little impact on performance, because instead of using reflectio
     (1) dispatchTouchEvent:
     
     This method is generally used to initially process events, because the action is dispatched from this, 
-    so super.dispatchTouchEvent is usually called. This will continue to call onInterceptTouchEvent, which is then determined by onInterceptTouchEvent.
+    so super.dispatchTouchEvent is usually called. This will continue to call onInterceptTouchEvent, 
+    which is then determined by onInterceptTouchEvent.
     
     (2) onInterceptTouchEvent:
     
-    If the return value is true, the event will be passed to its own onTouchEvent(); if the return value is false, 
-    it will be passed to the next View's dispatchTouchEvent();
+    If the return value is true, the event will be passed to its own onTouchEvent(); if the return
+    value is false, it will be passed to the next View's dispatchTouchEvent();
     
     (3) onTouchEvent():
     
     If the return value is true, the event is consumed by itself, and subsequent actions let it process; if the 
-    return value is false, it does not consume the event itself, and returns to the other parent's onTouchEvent to be processed.
+    return value is false, it does not consume the event itself, and returns to the other parent's 
+    onTouchEvent to be processed.
     
     Pseudo code of the three method relationships: If the current View intercepts the event, it is handed over 
     to its own onTouchEvent to handle, otherwise it is thrown to the child View to continue the same process.
@@ -1787,11 +1806,9 @@ ButterKnife has little impact on performance, because instead of using reflectio
     Parent layer's onInterceptTouchEvent
     
     As mentioned earlier, the underlying View can receive this event with a precondition: if the parent 
-    layer allows it. Assuming that the parent level's dispatch method is not changed, the parent's onInterceptTouchEvent
-    method is called before the system calls the underlying onTouchEvent. Whether the parent layer View wants to
-    intercept the action after the touch event. If onInterceptTouchEvent returns true, then all actions after 
-    this touch event will not be passed to the deep View, and will be passed to the parent layer's onTouchEvent,
-    which means that the parent layer has intercepted the touch event, and the subsequent action is also You 
+    layer allows it. Assuming that the parent level's dispatch method is not changed, the parent's 
+    onInterceptTouchEvent method is called before the system calls the underlying onTouchEvent. Whether 
+    onInterceptTouchEvent means that the parent layer has intercepted the touch event, and the subsequent action is also You 
     don't have to ask onInterceptTouchEvent, the onInterceptTouchEvent will not be called again after the action
     that is emitted after this touch event until the next touch event. If onInterceptTouchEvent returns false,
     then this action will be sent to the deeper View, and each subsequent action will ask the parent layer's 
@@ -1870,8 +1887,8 @@ http://hanhailong.com/2015/09/24/Android-%E4%B8%89%E5%BC%A0%E5%9B%BE%E6%90%9E%E5
     
     Updating the screen in the main thread of the UI can cause problems. For example, if you update too long, your
     main UI thread will be blocked by the function you are drawing. Then you will not be able to respond to messages
-    such as buttons and touch screens. When using SurfaceView, it will not block your UI main thread because it updates 
-    the screen in a new thread. But this also brings another problem, that is, event synchronization. 
+    such as buttons and touch screens. When using SurfaceView, it will not block your UI main thread because
+    it updates the screen in a new thread. But this also brings another problem, that is, event synchronization. 
     For example, if you touch the screen for a while, you need thread processing in SurfaceView. Generally, 
     you need to have an event queue design to save touchevent, which is a bit more complicated because it
     involves thread safety.
